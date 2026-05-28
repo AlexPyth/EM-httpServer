@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: unless-stopped
+    volumes:
+      - ./backend/app:/app:ro
+    env_file: "./backend/.env"
+    networks:
+      - em-backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80/tcp"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - backend
+    networks:
+      - em-nginx
+      - em-backend
+  
+networks:
+  em-backend:
+    name: em-backend-net
+    internal: true
+
+  em-nginx:
+    name: em-nginx-net
